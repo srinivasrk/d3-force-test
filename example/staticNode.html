@@ -1,0 +1,176 @@
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<body>
+    <div style="padding-top: 30px" id="map"></div>
+</body>
+<style>
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+
+}
+
+.node-active{
+  stroke: #555;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #555;
+  stroke-opacity: .3;
+}
+
+.link-active {
+  stroke-opacity: 1;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+</style>
+
+<script>
+var graph = {
+  "nodes": [{ x: 181.88500483607442, y: 40, name: '349506' },
+  { x: 191.30512009363656, y: 80, name: '349507' },
+  { x: 216.30841455209406, y: 285, name: '349508' },
+  { x: 210.8374916620889, y: 195.5, name: '349509' },
+  { x: 241.94921145762152, y: 80, name: '349512' },
+  { x: 283.9308326182092, y: 115, name: '349513' },
+  { x: 291.31726865413157, y: 74.5, name: '349515' },
+  { x: 291.32259289659004, y: 74.5, name: '349516' },
+  { x: 291.37430571171876, y: 74.5, name: '349517' },
+  { x: 291.3799573754247, y: 74.5, name: '349518' },
+  { x: 291.3938757631115, y: 74.5, name: '349519' },
+  { x: 291.4613971810937, y: 74.5, name: '349520' },
+  { x: 291.4569852321222, y: 74.5, name: '349521' },
+  { x: 291.48657907347655, y: 74.5, name: '349522' },
+  { x: 291.52450709654545, y: 74.5, name: '349523' },
+  { x: 291.52586220028667, y: 74.5, name: '349524' },
+  { x: 291.5383255448617, y: 74.5, name: '349525' },
+  { x: 291.63173077122764, y: 74.5, name: '349526' },
+  { x: 291.64623618106447, y: 74.5, name: '349527' },
+  { x: 291.70934595029365, y: 74.5, name: '349528' },
+  { x: 295.1230718032093, y: 206.08000000000004, name: '349529' },
+  { x: 323.54472851463214, y: 40.200000000000045, name: '349530' },
+  { x: 327.98446759620106, y: 40, name: '349531' },
+  { x: 347.06158609321704, y: 167, name: '349532' },
+  { x: 368.3077567179879, y: 392, name: '349534' },
+  { x: 369.13751882661785, y: 393, name: '349536' },
+  { x: 375.39616823020907, y: 40, name: '349539' },
+  { x: 390.4488351843071, y: 150, name: '349540' },
+  { x: 407.3581009357511, y: 523.1600000000001, name: '349542' },
+  { x: 407.83083992353966, y: 34, name: '349547' },
+  { x: 408.2562695491404, y: 148, name: '349548' },
+  { x: 414.620725343957, y: 375, name: '349549' },
+  { x: 159.49644230052087, y: 199, name: '511128' },
+  { x: 100, y: 119, name: '511129' },
+  { x: 171.22590834397613, y: 190, name: '511130' },
+  { x: 414.80428317333065, y: 530, name: '511131' },
+  { x: 116.93769681700985, y: 20, name: '511132' },
+  { x: 263.2523156020653, y: 340, name: '511133' },
+  { x: 125.40065726267215, y: 129, name: '511134' },
+  { x: 255.37404535271548, y: 152.5, name: '511135' },
+  { x: 375.91277614533993, y: 50, name: '511136' },
+  { x: 201.84903120835997, y: 120, name: 'GHTANK' },
+  { x: 200.31768823210996, y: 90, name: 'KEMPER_RD' }],
+  "links": [{
+    source: 1,
+    target: 0
+  }]
+}
+
+var margin = {
+  top: -5,
+  right: -5,
+  bottom: -5,
+  left: -5
+};
+var width = window.screen.width - margin.left - margin.right,
+  height = window.screen.height - margin.top - margin.bottom;
+
+var force = d3.forceSimulation(graph.nodes)
+    .force("charge", d3.forceManyBody().strength(-80))
+    .force("link", d3.forceLink(graph.links).distance(100).strength(-100))
+    .force("x", d3.forceX())
+    .force("y", d3.forceY())
+    .stop();
+
+var svg = d3.select("#map").append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
+
+var container = svg.append("g");
+
+//d3.json('http://blt909.free.fr/wd/map2.json', function(error, graph) {
+
+
+var links = container.append("g")
+  .attr("stroke", "#000")
+  .attr("stroke-width", 1.5)
+  .selectAll("line")
+  .data(graph.links)
+  .enter().append("line")
+  .attr("x1", function(d) { return d.source.x; })
+  .attr("y1", function(d) { return d.source.y; })
+  .attr("x2", function(d) { return d.target.x; })
+  .attr("y2", function(d) { return d.target.y; });
+
+var nodes = container.append("g")
+  .attr("class", "nodes")
+  .selectAll(".node")
+  .data(graph.nodes)
+  .enter().append("g")
+  .attr("class", "node")
+  .style("margin-left", "10px") //give margin-top for spacing between bars
+  .style("margin-right", "10px") //give margin-top for spacing between bars
+
+
+
+var textElements = svg.append("g")
+.attr("class", "texts")
+.selectAll("text")
+.data(graph.nodes)
+.enter().append("text")
+  .text(function (node) { return  node.name })
+  .attr("font-size", 12)
+  .attr("dx", 15)
+  .attr("dy", 4)
+  .attr('x', function (node) { return node.x })
+  .attr('y', function (node) { return node.y })
+
+// nodes.append("rect")
+//   .attr("width", 50)
+//   .attr("height", 20)
+//   .attr("x", function(d) {
+//       return d.x - 10;
+//   })
+//   .attr("y", function(d) {
+//       return d.y - 15;
+//   })
+
+nodes.append("circle")
+  .attr("r", 5)
+  .attr("cx", function(d) {
+    return d.x;
+  })
+  .attr("cy", function(d) {
+    return d.y;
+  })
+
+// var tanks = container.append("g")
+//   .attr("class", "nodes")
+//   .selectAll(".node")
+//   .data(graph.nodes)
+//   .enter().append("g")
+//   .attr("class", "node")
+//   .attr("cx", function(d) {
+//       return d.x;
+//   })
+//   .attr("cy", function(d) {
+//       return d.y;
+//   })
+
+</script>
